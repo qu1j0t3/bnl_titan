@@ -50,8 +50,19 @@
                   (LDM . #xf0)))
 (define addr 0)
 
+(define (hex-nibble v)
+  (let ((masked (bitwise-and v #xf)))
+    (integer->char
+      (if (< masked 10)
+        (+ masked (char->integer #\0))
+        (+ (- masked 10) (char->integer #\A))))))
+(define (hex-byte v)
+  (list->string (map hex-nibble (list (arithmetic-shift v -4) v))))
+(define (hex-word v)
+  (apply string-append (map hex-byte (list (arithmetic-shift v -8) v))))
+
 (define (assemble-byte v)
-  (printf "~X ~X~n" addr (bitwise-and v #xff))
+  (print (hex-word addr) "  " (hex-byte v))
   (set! addr (+ addr 1)))
 (define (assemble-word v)
   (assemble-byte (arithmetic-shift v -8))
@@ -59,16 +70,22 @@
 (define (assemble-op op param)
   (assemble-byte (+ (cdr (assv op opcodes)) param)))
 
+; the following are called from the grammar
+(define (list-line lst)
+  (display "      ")
+  (for-each (lambda (x) (display x) (display #\space))
+            lst)
+  (display #\newline))
 (define (assemble-impl op)
   (assemble-op op 0)
-  op)
+  (list op))
 (define (assemble-reg op reg)
   (let ((reg-number (- (char->integer (char-upcase (car reg)))
                        (char->integer #\A))))
     (if (and (>= reg-number 0) (<= reg-number 15))
       (begin
         (assemble-op op reg-number)
-        op)
+        (list op (car reg)))
       (begin
         (list 'bad-register (car reg))))))
 (define (assemble-addr op addr)
@@ -77,7 +94,7 @@
       (begin
         (assemble-op op 0)
         (assemble-word address)
-        op)
+        (list op (string-append "0x" (hex-word address))))
       (begin
         (list 'bad-address address)))))
 
