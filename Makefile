@@ -2,6 +2,6 @@ CFLAGS = -O2 -g
 LDFLAGS = -g
 
 bnlasm : assembler.o
-	$(CC) -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^
 
 clean : ; rm -f bnlasm assembler.o
