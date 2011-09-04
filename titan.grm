@@ -15,6 +15,8 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+; vim:syntax=scheme
+
 (require-extension lalr)
 
 (define titan-parser
@@ -28,12 +30,12 @@
     (NOP ADD SUB AND OR NOT XOR PSH POP JMP JPI JPZ JPC JPS STM LDM
      ACONST REG NEWLINE)
 
+    ;; grammar rules
     (lines (lines line) : $2
            (line)       : $1)
 
-    ;; rules
-    (line (NEWLINE)       : '()
-          (instr NEWLINE) : (print "assembled: " $1))
+    (line (NEWLINE)       : (void)
+          (instr NEWLINE) : (print "  " $1))
     (instr-impl (NOP) : $1
                 (ADD) : $1
                 (SUB) : $1

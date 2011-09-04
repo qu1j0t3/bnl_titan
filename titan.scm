@@ -18,7 +18,13 @@
 (include "titan.grm.scm")
 
   (define (make-lexer errorp)
-    (let ((input '(NOP NEWLINE ADD NEWLINE PSH REG NEWLINE STM ACONST NEWLINE NEWLINE)))
+    (let ((input '(NOP NEWLINE
+                   ADD NEWLINE
+                   PSH (REG #\B) NEWLINE
+                   POP (REG #\X) NEWLINE
+                   STM (ACONST 1234)
+                   NEWLINE
+                   NEWLINE)))
       (lambda ()
         (if (null? input)
           '*eoi*
@@ -57,11 +63,23 @@
   (assemble-op op 0)
   op)
 (define (assemble-reg op reg)
-  (assemble-op op 0)
-  op)
+  (let ((reg-number (- (char->integer (char-upcase (car reg)))
+                       (char->integer #\A))))
+    (if (and (>= reg-number 0) (<= reg-number 15))
+      (begin
+        (assemble-op op reg-number)
+        op)
+      (begin
+        (list 'bad-register (car reg))))))
 (define (assemble-addr op addr)
-  (assemble-op op 0)
-  op)
+  (let ((address (car addr)))
+    (if (and (>= address 0) (<= address #xffff))
+      (begin
+        (assemble-op op 0)
+        (assemble-word address)
+        op)
+      (begin
+        (list 'bad-address address)))))
 
 (titan-parser (make-lexer print) print)
 
