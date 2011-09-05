@@ -30,13 +30,15 @@
 
   ; read a sequence of letters into a list
   ; ends at a non-alphabetic, or EOF
-  (define (read-alpha)
-    (if (char-alphabetic? (peek-char))
-      (cons (char-upcase (read-char)) (read-alpha))
-      '()))
+  ; the first character, already read, is provided as the parameter
+  (define (read-alpha c)
+    (cons (char-upcase c)
+      (if (char-alphabetic? (peek-char))
+        (read-alpha (read-char))
+        '())))
 
   ; read a literal constant: a series of hex digits preceded by '0x'
-  (define (read-addr)
+  (define (read-const)
     (define (read-hex)
       (let loop ((acc 0)
                  (c (peek-char)))
@@ -45,7 +47,6 @@
           (loop (+ (arithmetic-shift acc 4)
                    (hex-digit (read-char)))
                 (peek-char)))))
-    (read-char) ; skip 0
     (if (char=? (char-upcase (read-char)) #\X)
       (let ((addr (read-hex)))
         (if (and (>= addr 0) (<= addr #xffff))
@@ -75,25 +76,22 @@
           (list 'bad-opcode sym)))))
         
   (lambda ()
-    (let loop ((c (peek-char)))
+    (let loop ((c (read-char)))
       (cond
         ((eof-object? c)
           '*eoi*)
         ((char=? c #\newline)
-          (read-char)         ; eat it
           'NEWLINE)
         ((char=? c #\,)
-          (read-char)         ; eat it
           'COMMA)
         ((char-whitespace? c) ; skip whitespace
-          (read-char)
-          (loop (peek-char)))
+          (loop (read-char)))
         ((char=? c #\/)       ; introduces comment
           (skip-comment))
         ((char-alphabetic? c) ; read a 'word'
-          (word-token (read-alpha)))
+          (word-token (read-alpha c)))
         ((char=? c #\0)       ; introduces an address constant
-          (read-addr))
+          (read-const))
         (else
           (list 'bad-character c))))))
     
