@@ -59,4 +59,6 @@
                                        (assemble-reg 'POP (car $4)))
            (CLR REG)           : (list (assemble-reg 'PSH 0)
                                        (assemble-reg 'POP (car $2)))
-           (ACONST)            : (assemble-byte (car $1)))))  ; byte constant
+           (ACONST)            : (begin
+                                   (assemble-byte (car $1))  ; byte constant
+                                   '()))))

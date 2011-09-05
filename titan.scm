@@ -146,10 +146,11 @@
 (define addr 0)
 
 (define (list-line lst)
-  (display "      ")
-  (for-each (lambda (x) (display x) (display #\space))
-            lst)
-  (display #\newline))
+  (unless (null? lst)
+    (display "      ")
+    (for-each (lambda (x) (display x) (display #\space))
+              lst)
+    (display #\newline)))
 
 ; assemble an instruction with 'implicit' addressing mode (no operands)
 (define (assemble-impl op)
