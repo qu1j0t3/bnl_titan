@@ -29,15 +29,13 @@
 (define (make-lexer errorp)
 
   ; read a sequence of letters into a list
+  ; ends at a non-alphabetic, or EOF
   (define (read-alpha)
     (let ((c (peek-char)))
-      (cond
-        ((whitespace-or-eof? c)
-          '())
-        ((char-alphabetic? c)
-          (cons (char-upcase (read-char)) (read-alpha)))
-        (else
-          'expected-letter))))
+      (if (and (not (eof-object? c))
+               (char-alphabetic? c))
+        (cons (char-upcase (read-char)) (read-alpha))
+        '())))
 
   ; read an address, a series of hex digits preceded by '0x'
   (define (read-addr)
@@ -57,16 +55,16 @@
           'bad-address))
       'expected-0x))
 
-  (define (skip-comment) ; eat characters up to newline (or EOF)
-    (let ((c (read-char)))
-      (print "eating: " c)
+  ; eat characters up to newline (or EOF)
+  (define (skip-comment)    
+    (let ((c (read-char)))  ; eat one
       (if (or (eof-object? c)
               (char=? c #\newline))
-        'NEWLINE              ; a comment looks like a NEWLINE token
+        'NEWLINE            ; a comment is tokenised as a NEWLINE 
         (skip-comment))))
 
   (define (word-token lst)
-    (print "word-token: " lst)
+    ;(print "word-token: " lst)
     (if (null? (cdr lst))
       (let ((reg-number (char->reg (car lst))))
         (if (and (>= reg-number 0) (<= reg-number 15))
@@ -86,6 +84,9 @@
         ((char=? c #\newline)
           (read-char)         ; eat it
           'NEWLINE)
+        ((char=? c #\,)
+          (read-char)         ; eat it
+          'COMMA)
         ((char-whitespace? c) ; skip whitespace
           (read-char)
           (loop (peek-char)))

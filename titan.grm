@@ -26,7 +26,7 @@
 
     ;; tokens
     (NOP ADD SUB AND OR NOT XOR PSH POP JMP JPI JPZ JPC JPS STM LDM MOV
-     ACONST REG NEWLINE)
+     ACONST REG NEWLINE COMMA)
 
     ;; grammar rules
     (lines (lines line) : $2
@@ -53,7 +53,8 @@
     (instr (instr-impl)        : (assemble-impl $1)
            (instr-reg  REG)    : (assemble-reg  $1 (car $2))
            (instr-addr ACONST) : (assemble-addr $1 (car $2))
-;           (MOV REG , REG)     :
-;             (begin (assemble-reg 'PSH (cdr $1))
-;                    (assemble-reg 'POP (cdr $2)))
-)))
+           (MOV REG COMMA REG) :
+             (begin (assemble-reg 'PSH (car $2))
+                    (assemble-reg 'POP (car $4))
+                    (list-line (list 'MOV (reg->char (car $2)) #\, (reg->char (car $4)))))
+           (ACONST)            : (assemble-byte (car $1)))))  ; byte constant
