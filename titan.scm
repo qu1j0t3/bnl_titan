@@ -196,7 +196,7 @@
   (assemble-word addr)
   (list op (string-append "0x" (hex-word addr))))
 
-; ------ error handler - print message and abort ------
+;;; ------ error handler - print message and abort ------
 
 (define (errorp . args)
   (apply print args)
