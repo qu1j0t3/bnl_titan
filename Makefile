@@ -23,7 +23,7 @@ all : bnlasm titan.grm.scm
 bnlasm : assembler.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
-clean : ; rm -f bnlasm assembler.o
+clean : ; rm -f bnlasm assembler.o titan.grm.scm titan.grm.out
 
 %.grm.scm : %.grm ; csi -s $<
 
