@@ -18,12 +18,9 @@
 CFLAGS = -O2 -g
 LDFLAGS = -g
 
-all : bnlasm titan.grm.scm
+all : titan.grm.scm
 
-bnlasm : assembler.o
-	$(CC) $(LDFLAGS) -o $@ $^
-
-clean : ; rm -f bnlasm assembler.o titan.grm.scm titan.grm.out
+clean : ; rm -f titan.grm.scm titan.grm.out
 
 %.grm.scm : %.grm ; csi -s $<
 
