@@ -1,4 +1,5 @@
-bootnecklad is working on a processor he calls ["Titan"](http://marc.cleave.me.uk/cpu/index.htm).
+["bootnecklad"](https://github.com/bootnecklad) is working on a homebrew processor
+he calls ["Titan"](http://marc.cleave.me.uk/cpu/index.htm).
 
 Here's my assembler for it.
 
@@ -15,11 +16,10 @@ Here's my assembler for it.
 
 ## Known issues ##
 
- * The `CLR` opcode is not yet supported, but it exists in some source files.
  * The assembler currently uses standard input only.
  * There is no object file output. An object file format is not yet defined for Titan.
 
-## Other things here ##
+## Links ##
 
-I've committed bootnecklad's original assembler source, *assembler.c*, to this project, 
-since I feel it belongs under version control so that it can be completed collaboratively.
+ * bootnecklad's ["assembler project"](https://github.com/bootnecklad/Titan-Assembler)
+
