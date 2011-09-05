@@ -25,5 +25,5 @@
    PSH A       /Pushes loop remainder onto stack
    XOR         /Checks for equality
    JPZ 0x0021  /If equal, loop is over, returns to main loop
-   POP         /Pops loop remainder back into A
+   POP A       /Pops loop remainder back into A
    JMP 0x0029  /returns to looping
