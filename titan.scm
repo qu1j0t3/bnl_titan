@@ -22,7 +22,7 @@
                   (POP . #x80) (JMP . #x90) (JPI . #xa0) (JPZ . #xb0)
                   (JPC . #xc0) (JPS . #xd0) (STM . #xe0) (LDM . #xf0)
                   ; pseudo-instructions
-                  (MOV . #f)))
+                  (MOV . #f)   (CLR . #f)))
 
 ; ------ lexical analyser. produces stream of tokens for parser ------
 
@@ -128,10 +128,13 @@
   (assemble-byte (+ (cdr (assv op opcodes)) param)))
 
 (define (char->reg c)
-  (- (char->integer (char-upcase c))
-     (char->integer #\A)))
+  (if (char=? c #\Z)
+    0
+    (+ 1 (- (char->integer c) (char->integer #\A)))))
 (define (reg->char r)
-  (integer->char (+ (char->integer #\A) r)))
+  (if (zero? r)
+    #\Z
+    (integer->char (+ (char->integer #\A) (- r 1)))))
 
 (define (whitespace-or-eof? c)
   (or (eof-object? c)
