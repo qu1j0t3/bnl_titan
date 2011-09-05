@@ -31,13 +31,11 @@
   ; read a sequence of letters into a list
   ; ends at a non-alphabetic, or EOF
   (define (read-alpha)
-    (let ((c (peek-char)))
-      (if (and (not (eof-object? c))
-               (char-alphabetic? c))
-        (cons (char-upcase (read-char)) (read-alpha))
-        '())))
+    (if (char-alphabetic? (peek-char))
+      (cons (char-upcase (read-char)) (read-alpha))
+      '()))
 
-  ; read an address, a series of hex digits preceded by '0x'
+  ; read a literal constant: a series of hex digits preceded by '0x'
   (define (read-addr)
     (define (read-hex)
       (let loop ((acc 0)
