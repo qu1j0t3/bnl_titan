@@ -19,7 +19,7 @@ CLR A
 / Jump to end if 0
 #Main
 MOV A,E
-JPZ Output	/ Jump to output routine when Loop Amount = 0
+JPZ #Output	/ Jump to output routine when Loop Amount = 0
 LDM 0x0014	/ A <-- 1
 MOV B,A		/ B <-- 1
 MOV A,E		/ A <-- Loop amount
@@ -33,7 +33,7 @@ MOV B,D		/ B <-- Fn-2
 ADD				/ Add Fn-1 and Fn-2
 MOV D,C		/ Store Fn-1 in Fn-2
 MOV C,A		/ Store Fn in Fn-1
-JMP	Main	/ Back to beginning of Main
+JMP	#Main	/ Back to beginning of Main
 
 
 #Output
@@ -41,6 +41,6 @@ NOP
 MOV A,C		/ A <-- Current
 STM 0xFFFD	/ Output current number to LEDs
 NOP
-JMP Output  / Jump to NOP to prevent premature ending of program
+JMP #Output  / Jump to NOP to prevent premature ending of program
 
 
