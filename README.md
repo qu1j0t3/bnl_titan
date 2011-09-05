@@ -12,12 +12,14 @@ Here's my assembler for it.
 ## Quick start ##
 
  * `make all`
- * `csi -s titan.scm < input.asm`
+ * `csi -s titan.scm < samples/counter.asm`
 
 ## Known issues ##
 
  * The assembler currently uses standard input only.
  * There is no object file output. An object file format is not yet defined for Titan.
+ * Only backward label references are allowed, because there is currently
+   only one assembly pass. This means that the sample files will not yet assemble.
 
 ## Links ##
 

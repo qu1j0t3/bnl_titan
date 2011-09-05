@@ -29,16 +29,19 @@
 
 (define (make-lexer errorp)
 
+  ; is the character a letter or underscore?
+  (define (word-char? c)
+    (or (char=? c #\_)
+        (char-alphabetic? c)))
+
   ; read a sequence of letters or underscores into a list
   ; ends at a non-alphabetic, or EOF
   ; the first character, already read, is provided as the parameter
   (define (read-alpha c)
-    (let ((next (peek-char)))
-      (cons (char-upcase c)
-        (if (or (char=? next #\_)
-                (char-alphabetic? next))
-          (read-alpha (read-char))
-          '()))))
+    (cons (char-upcase c)
+      (if (word-char? (peek-char))
+        (read-alpha (read-char))
+        '())))
 
   ; read a literal constant: a series of hex digits preceded by '0x'
   (define (read-const)
@@ -104,7 +107,7 @@
           (skip-comment))
         ((char-whitespace? c) ; skip whitespace
           (loop (read-char)))
-        ((char-alphabetic? c) ; read a 'word'
+        ((word-char? c) ; read a 'word'
           (word-token (read-alpha c)))
         ((char=? c #\0)       ; introduces an address constant
           (read-const))
