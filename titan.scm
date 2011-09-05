@@ -67,12 +67,12 @@
       (let ((reg-number (char->reg (car lst))))
         (if (and (>= reg-number 0) (<= reg-number 15))
           (list 'REG reg-number)
-          'bad-register))
+          (list 'bad-register (car lst))))
       (let* ((sym (string->symbol (list->string lst)))
              (lkp (assv sym opcodes)))
         (if (pair? lkp)
           (car lkp)
-          'bad-opcode))))
+          (list 'bad-opcode sym)))))
         
   (lambda ()
     (let loop ((c (peek-char)))
@@ -95,7 +95,7 @@
         ((char=? c #\0)         ; introduces an address constant
           (read-addr))
         (else
-          'bad-character)))))
+          (list 'bad-character c))))))
     
 
 (define addr 0)
@@ -121,7 +121,7 @@
       ((and (char>=? c #\A) (char<=? c #\F))
         (+ 10 (- (char->integer c) (char->integer #\A))))
       (else
-        'bad-hex))))
+        (list 'bad-hex c)))))
 
 (define (assemble-byte v)
   (print (hex-word addr) "  " (hex-byte v))
@@ -167,7 +167,8 @@
   (list op (string-append "0x" (hex-word addr))))
 
 (define (errorp . args)
-  (apply print args))
+  (apply print args)
+  (exit 1))
 
 (titan-parser (make-lexer errorp) errorp)
 
