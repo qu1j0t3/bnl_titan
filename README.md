@@ -1,5 +1,5 @@
-["bootnecklad"](https://github.com/bootnecklad) is working on a homebrew processor
-he calls ["Titan"](http://marc.cleave.me.uk/cpu/index.htm).
+[bootnecklad](https://github.com/bootnecklad) is working on a homebrew processor
+he calls [Titan](http://marc.cleave.me.uk/cpu/index.htm).
 
 Here's my assembler for it.
 
@@ -21,5 +21,5 @@ Here's my assembler for it.
 
 ## Links ##
 
- * bootnecklad's ["assembler project"](https://github.com/bootnecklad/Titan-Assembler)
+ * bootnecklad's [assembler project](https://github.com/bootnecklad/Titan-Assembler)
 
