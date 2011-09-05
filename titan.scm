@@ -137,15 +137,6 @@
       (else
         (list 'bad-hex c)))))
 
-(define (assemble-byte v)
-  (print (hex-word addr) "  " (hex-byte v))
-  (set! addr (+ addr 1)))
-(define (assemble-word v)
-  (assemble-byte (arithmetic-shift v -8))
-  (assemble-byte v))
-(define (assemble-op op param)
-  (assemble-byte (+ (cdr (assv op opcodes)) param)))
-
 (define (char->reg c)
   (if (char=? c #\Z)
     0
@@ -174,6 +165,21 @@
               lst)
     (display #\newline)))
 
+;; assemble one byte value, and increment address
+(define (assemble-byte v)
+  (print (hex-word addr) "  " (hex-byte v))
+  (set! addr (+ addr 1))
+  '())  ; no listing output
+
+;; assemble two big-endian bytes; operand of memory & jump instructions
+(define (assemble-word v)
+  (assemble-byte (arithmetic-shift v -8))
+  (assemble-byte v))
+
+;; assemble raw instruction given opcode and parameter bits
+(define (assemble-op op param)
+  (assemble-byte (+ (cdr (assv op opcodes)) param)))
+
 ;; assemble an instruction with 'implicit' addressing mode (no operands)
 (define (assemble-impl op)
   (assemble-op op 0)
@@ -189,6 +195,8 @@
   (assemble-op op 0)
   (assemble-word addr)
   (list op (string-append "0x" (hex-word addr))))
+
+; ------ error handler - print message and abort ------
 
 (define (errorp . args)
   (apply print args)
