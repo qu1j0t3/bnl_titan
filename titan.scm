@@ -139,7 +139,8 @@
 
 (define (assemble-byte v)
   (print (hex-word addr) "  " (hex-byte v))
-  (set! addr (+ addr 1)))
+  (set! addr (+ addr 1))
+  '())  ; no listing output
 (define (assemble-word v)
   (assemble-byte (arithmetic-shift v -8))
   (assemble-byte v))
