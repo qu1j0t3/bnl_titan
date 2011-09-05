@@ -2,5 +2,18 @@ bootnecklad is working on a processor he calls ["Titan"](http://marc.cleave.me.u
 
 Here's my assembler for it.
 
-(I've also committed his original assembler source code to this project, since I feel it belongs
-under version control for collaboration.)
+== Pre-requisites ==
+
+ * It requires [Chicken Scheme](http://call-cc.org/).
+ * Further, it requires the [lalr](http://wiki.call-cc.org/eggref/4/lalr) "egg".
+   Install this from the command line: `chicken-install lalr`
+
+== Quick start ==
+
+ * `make all`
+ * `csi -s titan.scm < input.asm`
+
+== Other things here ==
+
+I've committed bootnecklad's original assembler source, *assembler.c*, to this project, 
+since I feel it belongs under version control so that it can be completed collaboratively.
