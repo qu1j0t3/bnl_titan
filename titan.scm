@@ -92,14 +92,11 @@
           (skip-comment))
         ((char-alphabetic? c) ; read a 'word'
           (word-token (read-alpha)))
-        ((char=? c #\0)         ; introduces an address constant
+        ((char=? c #\0)       ; introduces an address constant
           (read-addr))
         (else
           (list 'bad-character c))))))
     
-
-(define addr 0)
-
 ; ------ utility routines ------
 
 (define (hex-nibble v)
@@ -143,6 +140,9 @@
       (char-whitespace? c)))
 
 ; ------ these routines are called from the grammar ------
+
+; assembly base address
+(define addr 0)
 
 (define (list-line lst)
   (display "      ")
