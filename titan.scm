@@ -17,38 +17,91 @@
 
 (include "titan.grm.scm")
 
-  (define (make-lexer errorp)
-    (let ((input '(NOP NEWLINE
-                   ADD NEWLINE
-                   PSH (REG #\B) NEWLINE
-                   POP (REG #\X) NEWLINE
-                   STM (ACONST 1234)
-                   NEWLINE
-                   NEWLINE)))
-      (lambda ()
-        (if (null? input)
-          '*eoi*
-          (let ((next-token (car input)))
-            (set! input (cdr input))
-            next-token)))))
+(define opcodes '((NOP . #x00) (ADD . #x10) (SUB . #x20) (AND . #x30)
+                  (OR  . #x40) (NOT . #x50) (XOR . #x60) (PSH . #x70)
+                  (POP . #x80) (JMP . #x90) (JPI . #xa0) (JPZ . #xb0)
+                  (JPC . #xc0) (JPS . #xd0) (STM . #xe0) (LDM . #xf0)
+                  ; pseudo-instructions
+                  (MOV . #f)))
 
-(define opcodes '((NOP . #x00)
-                  (ADD . #x10)
-                  (SUB . #x20)
-                  (AND . #x30)
-                  (OR  . #x40)
-                  (NOT . #x50)
-                  (XOR . #x60)
-                  (PSH . #x70)
-                  (POP . #x80)
-                  (JMP . #x90)
-                  (JPI . #xa0)
-                  (JPZ . #xb0)
-                  (JPC . #xc0)
-                  (JPS . #xd0)
-                  (STM . #xe0)
-                  (LDM . #xf0)))
+; ------ lexical analyser. produces stream of tokens for parser ------
+
+(define (make-lexer errorp)
+
+  ; read a sequence of letters into a list
+  (define (read-alpha)
+    (let ((c (peek-char)))
+      (cond
+        ((whitespace-or-eof? c)
+          '())
+        ((char-alphabetic? c)
+          (cons (char-upcase (read-char)) (read-alpha)))
+        (else
+          'expected-letter))))
+
+  ; read an address, a series of hex digits preceded by '0x'
+  (define (read-addr)
+    (define (read-hex)
+      (let loop ((acc 0)
+                 (c (peek-char)))
+        (if (whitespace-or-eof? c)
+          acc
+          (loop (+ (arithmetic-shift acc 4)
+                   (hex-digit (read-char)))
+                (peek-char)))))
+    (read-char) ; skip 0
+    (if (char=? (char-upcase (read-char)) #\X)
+      (let ((addr (read-hex)))
+        (if (and (>= addr 0) (<= addr #xffff))
+          (list 'ACONST addr)
+          'bad-address))
+      'expected-0x))
+
+  (define (skip-comment) ; eat characters up to newline (or EOF)
+    (let ((c (read-char)))
+      (print "eating: " c)
+      (if (or (eof-object? c)
+              (char=? c #\newline))
+        'NEWLINE              ; a comment looks like a NEWLINE token
+        (skip-comment))))
+
+  (define (word-token lst)
+    (print "word-token: " lst)
+    (if (null? (cdr lst))
+      (let ((reg-number (char->reg (car lst))))
+        (if (and (>= reg-number 0) (<= reg-number 15))
+          (list 'REG reg-number)
+          'bad-register))
+      (let* ((sym (string->symbol (list->string lst)))
+             (lkp (assv sym opcodes)))
+        (if (pair? lkp)
+          (car lkp)
+          'bad-opcode))))
+        
+  (lambda ()
+    (let loop ((c (peek-char)))
+      (cond
+        ((eof-object? c)
+          '*eoi*)
+        ((char=? c #\newline)
+          (read-char)         ; eat it
+          'NEWLINE)
+        ((char-whitespace? c) ; skip whitespace
+          (read-char)
+          (loop (peek-char)))
+        ((char=? c #\/)       ; introduces comment
+          (skip-comment))
+        ((char-alphabetic? c) ; read a 'word'
+          (word-token (read-alpha)))
+        ((char=? c #\0)         ; introduces an address constant
+          (read-addr))
+        (else
+          'bad-character)))))
+    
+
 (define addr 0)
+
+; ------ utility routines ------
 
 (define (hex-nibble v)
   (let ((masked (bitwise-and v #xf)))
@@ -61,6 +114,16 @@
 (define (hex-word v)
   (apply string-append (map hex-byte (list (arithmetic-shift v -8) v))))
 
+(define (hex-digit chr)
+  (let ((c (char-upcase chr)))
+    (cond
+      ((char-numeric? c)
+        (- (char->integer c) (char->integer #\0)))
+      ((and (char>=? c #\A) (char<=? c #\F))
+        (+ 10 (- (char->integer c) (char->integer #\A))))
+      (else
+        'bad-hex))))
+
 (define (assemble-byte v)
   (print (hex-word addr) "  " (hex-byte v))
   (set! addr (+ addr 1)))
@@ -70,33 +133,42 @@
 (define (assemble-op op param)
   (assemble-byte (+ (cdr (assv op opcodes)) param)))
 
-; the following are called from the grammar
+(define (char->reg c)
+  (- (char->integer (char-upcase c))
+     (char->integer #\A)))
+(define (reg->char r)
+  (integer->char (+ (char->integer #\A) r)))
+
+(define (whitespace-or-eof? c)
+  (or (eof-object? c)
+      (char-whitespace? c)))
+
+; ------ these routines are called from the grammar ------
+
 (define (list-line lst)
   (display "      ")
   (for-each (lambda (x) (display x) (display #\space))
             lst)
   (display #\newline))
+
+; assemble an instruction with 'implicit' addressing mode (no operands)
 (define (assemble-impl op)
   (assemble-op op 0)
   (list op))
-(define (assemble-reg op reg)
-  (let ((reg-number (- (char->integer (char-upcase (car reg)))
-                       (char->integer #\A))))
-    (if (and (>= reg-number 0) (<= reg-number 15))
-      (begin
-        (assemble-op op reg-number)
-        (list op (car reg)))
-      (begin
-        (list 'bad-register (car reg))))))
-(define (assemble-addr op addr)
-  (let ((address (car addr)))
-    (if (and (>= address 0) (<= address #xffff))
-      (begin
-        (assemble-op op 0)
-        (assemble-word address)
-        (list op (string-append "0x" (hex-word address))))
-      (begin
-        (list 'bad-address address)))))
 
-(titan-parser (make-lexer print) print)
+; assemble a register instruction; operand is register number
+(define (assemble-reg op reg-number)
+  (assemble-op op reg-number)
+  (list op (reg->char reg-number)))
+
+; assemble a memory instruction; operand is a 16 bit address
+(define (assemble-addr op addr)
+  (assemble-op op 0)
+  (assemble-word addr)
+  (list op (string-append "0x" (hex-word addr))))
+
+(define (errorp . args)
+  (apply print args))
+
+(titan-parser (make-lexer errorp) errorp)
 

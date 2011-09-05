@@ -15,8 +15,6 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-; vim:syntax=scheme
-
 (require-extension lalr)
 
 (define titan-parser
@@ -27,7 +25,7 @@
     (out-table: "titan.grm.out")
 
     ;; tokens
-    (NOP ADD SUB AND OR NOT XOR PSH POP JMP JPI JPZ JPC JPS STM LDM
+    (NOP ADD SUB AND OR NOT XOR PSH POP JMP JPI JPZ JPC JPS STM LDM MOV
      ACONST REG NEWLINE)
 
     ;; grammar rules
@@ -53,5 +51,9 @@
                 (STM) : $1
                 (LDM) : $1)
     (instr (instr-impl)        : (assemble-impl $1)
-           (instr-reg REG)     : (assemble-reg $1 $2)
-           (instr-addr ACONST) : (assemble-addr $1 $2))))
+           (instr-reg  REG)    : (assemble-reg  $1 (car $2))
+           (instr-addr ACONST) : (assemble-addr $1 (car $2))
+;           (MOV REG , REG)     :
+;             (begin (assemble-reg 'PSH (cdr $1))
+;                    (assemble-reg 'POP (cdr $2)))
+)))
