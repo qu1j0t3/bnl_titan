@@ -25,16 +25,18 @@
     (out-table: "titan.grm.out")
 
     ;; tokens
-    (NOP ADD SUB AND OR NOT XOR PSH POP JMP JPI JPZ JPC JPS STM LDM  ; opcodes
+    (NOP ADD SUB AND OR NOT XOR PSH POP JMP JPI JPZ JPC JPS STM LDM  ; mnemonics
      MOV CLR                                                         ; pseudo-instructions
      ACONST REG                                                      ; operands
-     NEWLINE COMMA)                                                  ; punctuation
+     NEWLINE COMMA                                                   ; punctuation
+     LABEL)                                                          ; label definition
 
     ;; grammar rules
     (lines (lines line) : $2
            (line)       : $1)
 
     (line (NEWLINE)       : (void)           ; allow blank lines in source
+          (LABEL NEWLINE) : (list-line $1)   ; define label with current address
           (instr NEWLINE) : (list-line $1))  ; list each assembled instruction
     (instr-impl (NOP) : $1
                 (ADD) : $1

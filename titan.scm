@@ -15,6 +15,7 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+(use srfi-69) ; hash tables
 (include "titan.grm.scm")
 
 (define opcodes '((NOP . #x00) (ADD . #x10) (SUB . #x20) (AND . #x30)
@@ -74,6 +75,16 @@
         (if (pair? lkp)
           (car lkp)
           (list 'bad-opcode sym)))))
+
+  ; note that new label definitions are LABEL token,
+  ; while labels already defined are ACONST token with the associated address.
+  (define (label-token lst)
+    (let ((str (list->string lst)))
+      (if (hash-table-exists? labels str)
+        (list 'ACONST (hash-table-ref labels str))
+        (begin
+          (hash-table-set! labels str addr)
+          (list 'LABEL str #\= (hex-word addr))))))
         
   (lambda ()
     (let loop ((c (read-char)))
@@ -84,10 +95,12 @@
           'NEWLINE)
         ((char=? c #\,)
           'COMMA)
-        ((char-whitespace? c) ; skip whitespace
-          (loop (read-char)))
+        ((char=? c #\#)
+          (label-token (read-alpha (read-char))))
         ((char=? c #\/)       ; introduces comment
           (skip-comment))
+        ((char-whitespace? c) ; skip whitespace
+          (loop (read-char)))
         ((char-alphabetic? c) ; read a 'word'
           (word-token (read-alpha c)))
         ((char=? c #\0)       ; introduces an address constant
@@ -144,6 +157,7 @@
 
 ; assembly base address
 (define addr 0)
+(define labels (make-hash-table))
 
 (define (list-line lst)
   (unless (null? lst)
