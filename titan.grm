@@ -32,8 +32,8 @@
     (lines (lines line) : $2
            (line)       : $1)
 
-    (line (NEWLINE)       : (void)
-          (instr NEWLINE) : (list-line $1))
+    (line (NEWLINE)       : (void)           ; allow blank lines in source
+          (instr NEWLINE) : (list-line $1))  ; list each assembled instruction
     (instr-impl (NOP) : $1
                 (ADD) : $1
                 (SUB) : $1
@@ -53,8 +53,6 @@
     (instr (instr-impl)        : (assemble-impl $1)
            (instr-reg  REG)    : (assemble-reg  $1 (car $2))
            (instr-addr ACONST) : (assemble-addr $1 (car $2))
-           (MOV REG COMMA REG) :
-             (begin (assemble-reg 'PSH (car $2))
-                    (assemble-reg 'POP (car $4))
-                    (list-line (list 'MOV (reg->char (car $2)) #\, (reg->char (car $4)))))
+           (MOV REG COMMA REG) : (list (assemble-reg 'PSH (car $2))
+                                       (assemble-reg 'POP (car $4)))
            (ACONST)            : (assemble-byte (car $1)))))  ; byte constant

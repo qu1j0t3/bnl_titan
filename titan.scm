@@ -58,7 +58,7 @@
     (let ((c (read-char)))  ; eat one
       (if (or (eof-object? c)
               (char=? c #\newline))
-        'NEWLINE            ; a comment is tokenised as a NEWLINE 
+        'NEWLINE            ; a comment (including terminating newline) is a NEWLINE token
         (skip-comment))))
 
   (define (word-token lst)
@@ -169,6 +169,8 @@
 (define (errorp . args)
   (apply print args)
   (exit 1))
+
+; ------ start the parser ------
 
 (titan-parser (make-lexer errorp) errorp)
 
