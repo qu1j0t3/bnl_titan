@@ -91,7 +91,6 @@ The interpretation of SSS and DDD can be according to the low three bits of regi
     ...
     111 = G
 
-*Or, if it simplifies circuitry, the set 
 
 ## Load constant ##
 
