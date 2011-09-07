@@ -5,12 +5,12 @@
 All arithmetic and logical instructions will allow specification of source and destination
 registers from a set of four.
 
-### Instruction format ###
+### ADD, SUB, AND, OR, XOR ###
 
     Opcode   Src  Dst
     -------  ---  ---
     X X X X  S S  D D   XXXX is the opcode for ADD, SUB, AND, OR, XOR
-                        SS and DD, decoded as 0..3, identify registers A..D [or D..G*]
+                        SS and DD, decoded as 0..3, identify registers A..D
 
 The operation performed is
 
@@ -20,32 +20,44 @@ The assembler syntax is
 
     ADD dst, src
 
-The NOT opcode is a special case, since only the destination register is specified.
+#### Notes ####
+
+1.  `XOR R,R` and `SUB R,R` set R to zero in one byte. The assembler can therefore optimise
+    `CLR A..D`.
+
+2.  `ADD R,R` is a left shift, rotating high bit into carry.
+
+3.  The null operations `AND R,R` and `OR R,R` can be used to set processor flags according to R
+    (zero, sign).
+
+### NOT ###
+
+The `NOT` operation is a special case, since only the destination register is specified.
 
     Opcode   Src  Dst
     -------  ---  ---
     0 1 0 1  0 0  D D   Destination register DD (see above) is replaced by its binary complement.
 
-These variants are open for future extension. Possibilities are INC, DEC, TST, or (1 byte) CLR.
+The following three opcodes are open for future extension. Possibilities are *increment, decrement, 
+shift right,* or *add carry bit.* Note that the latter would simplify long arithmetic
+and also allow a simple implementation of bit rotates.
 
     0 1 0 1  0 1  D D
     0 1 0 1  1 0  D D
     0 1 0 1  1 1  D D
 
-(* --- If it is a simpler circuit, the four register set referenced by this extension
-can be D..G, as this can use the register select bits directly. This is preferable to
-H..K because it should overlap the eight register set addressable by LDM and STM.)
+The four registers are mapped according to the 2 select bits as follows:
 
     00 = D
-    01 = E
-    10 = F
-    11 = G
+    01 = A
+    10 = B
+    11 = C
 
 ## Indexed addressing mode ##
 
-The memory load and store instructions (LDM and STM) are extended to store any of a set of eight
+The memory load and store instructions (`LDM` and `STM`) are extended to store any of a set of eight
 GPRs (A..H) and given an optional index mode which uses the absolute address offset by index
-register A.
+register H.
 
     Opcode   I  Src
     -------  -  -----
@@ -74,17 +86,12 @@ I have chosen H for index register for no good reason other than its low 3 bits 
 
 ## Load constant ##
 
-The NOP instruction is removed. For assembly purposes, a pseudo instruction NOP can be assembled
-to one of the following null operations:
+The `NOP` instruction is removed. (Instead, a pseudo instruction `NOP`
+can be assembled to `POP Z`.)
 
-    POP Z
-    AND R, R
-    OR R, R
-    etc
-
-A new instruction, LDC, takes its place:
+A new instruction, `LDC`, takes its place:
 
     Opcode
     -----------------
-    0 0 0 0   D D D D   Destination register (A..N)
+    0 0 0 0   D D D D   Destination register (A..N; attempting to load Z has no effect)
     X X X X   X X X X   Byte following instruction is the value to load
