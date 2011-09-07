@@ -59,9 +59,11 @@ shift right,* or *add carry bit.* Note that the latter would simplify long arith
 and byte sized rotates. Long arithmetic would be important to C (operations on values larger than a byte)
 and so I have tentatively assigned `SHR` and `ADC`.
 
-    0 1 0 1  0 1  D D   SHR R
-    0 1 0 1  1 0  D D   ADC R
-    0 1 0 1  1 1  D D   ???
+    Opcode        Dst
+    ------------  ---
+    0 1 0 1  0 1  D D   SHR R   Shift R right by one bit. Shift carry flag into high bit and low bit into carry.
+    0 1 0 1  1 0  D D   ADC R   Add carry flag to register R.
+    0 1 0 1  1 1  D D   ???     Not yet implemented.
 
 The four registers are mapped according to the 2 select bits as follows:
 
