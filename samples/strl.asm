@@ -29,16 +29,17 @@
 	MOV A,B    ; 03
 	CLR A      ; 05
 #Loop
-	LDM #Str   ; 07 <--- *
-	JPZ #Done  ; 0A
+	LDM #Str   ; 07 <--- *  (note that we have to laboriously work out offsets by hand)
+	JPZ #Done
 	ADD
 	PSH A
-	LDM 0xQQQQ ; modify the low byte of instruction *'s address operand
+	LDM 0x0009 ; modify the low byte of instruction *'s address operand
 	ADD ; for simplicity, ignore carry. Str must not cross 00 page boundary
-	STM 0xQQQQ
+	STM 0x0009
 	POP A
 	JMP #Loop
 #Done
+	; count is in A register
 	JMP #Done
 #One
 	0x01

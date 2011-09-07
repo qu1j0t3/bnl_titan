@@ -26,13 +26,14 @@
 
 #StrL
 	LDC B, 0x01
-	CLR A      ; 05
+	CLR H
 #Loop
-	LDM #Str[A]
-	JPZ #Done  ; 0A
-	ADD A, B
+	LDM C, #Str[H]
+	JPZ #Done
+	ADD H, B       ; for simplicity, ignore carry. Str must not cross 00 page boundary
 	JMP #Loop
 #Done
+	; count is in H register
 	JMP #Done
 #Str
 	0x4f
