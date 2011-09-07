@@ -55,8 +55,8 @@ The `NOT` operation is a special case, since only the destination register is sp
     Syntax:             NOT R
 
 The following three opcodes are open for future extension. Possibilities are *increment, decrement, 
-shift right,* or *add carry bit.* Note that the latter would simplify long arithmetic
-and also allow a simple implementation of bit rotates.
+shift right,* or *add carry bit.* Note that the latter would simplify long arithmetic, long shifts,
+and byte sized rotates. Long arithmetic would be important to C (operations on values larger than a byte).
 
     0 1 0 1  0 1  D D
     0 1 0 1  1 0  D D
