@@ -25,26 +25,28 @@
 
 ; Code      Constants
 ; ----      ---------
-; 29 bytes  6 bytes    = 35 total
+; 31 bytes  6 bytes    = 37 total
 
 
 #StrL
-	LDM #One   ; 00
-	MOV A,B    ; 03
-	CLR A      ; 05
+	LDM #One   ; (3)
+	MOV A,B    ; (2)
+	CLR A      ; (2)
 #Loop
-	LDM #Str   ; 07 <--- *  (note that we have to laboriously work out offsets by hand)
-	JPZ #Done
-	ADD
-	PSH A
-	LDM 0x0009 ; modify the low byte of instruction *'s address operand
-	ADD ; for simplicity, ignore carry. Str must not cross 00 page boundary
-	STM 0x0009
-	POP A
-	JMP #Loop
+	LDM #Str   ; (3) <--- *  (note that we have to laboriously work out offsets by hand)
+        XOR        ; (1) update flags
+        XOR        ; (1) (I'm not sure if LDM update flags on Classic Titan)
+	JPZ #Done  ; (3)
+	ADD        ; (1)
+	PSH A      ; (1)
+	LDM 0x0009 ; (3) modify the low byte of instruction *'s address operand
+	ADD        ; (1) for simplicity, ignore carry. Str must not cross 00 page boundary
+	STM 0x0009 ; (3)
+	POP A      ; (1)
+	JMP #Loop  ; (3)
 #Done
 	; count is in A register
-	JMP #Done
+	JMP #Done  ; (3)
 #One
 	0x01
 #Str
