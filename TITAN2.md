@@ -56,11 +56,12 @@ The `NOT` operation is a special case, since only the destination register is sp
 
 The following three opcodes are open for future extension. Possibilities are *increment, decrement, 
 shift right,* or *add carry bit.* Note that the latter would simplify long arithmetic, long shifts,
-and byte sized rotates. Long arithmetic would be important to C (operations on values larger than a byte).
+and byte sized rotates. Long arithmetic would be important to C (operations on values larger than a byte)
+and so I have tentatively assigned `SHR` and `ADC`.
 
-    0 1 0 1  0 1  D D
-    0 1 0 1  1 0  D D
-    0 1 0 1  1 1  D D
+    0 1 0 1  0 1  D D   SHR R
+    0 1 0 1  1 0  D D   ADC R
+    0 1 0 1  1 1  D D   ???
 
 The four registers are mapped according to the 2 select bits as follows:
 
@@ -72,11 +73,12 @@ The four registers are mapped according to the 2 select bits as follows:
 *If it simplifies the circuitry, then use registers D..G instead. This allows the top two register select bits
 to be hard-wired.*
 
+
 ## Indexed addressing mode ##
 
 The memory load and store instructions (`LDM` and `STM`) are extended to operate on
 any of eight GPRs (A..H) and given an optional index mode which uses the absolute address
-offset by index register D [can be changed - but should be a register accessible by ALU instructions].
+offset by index register D *[can be changed - but should be a register accessible by ALU instructions].*
 
     Opcode   I  Src
     -------  -  -----
