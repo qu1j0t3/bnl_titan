@@ -99,5 +99,5 @@ A new instruction, `LDC`, takes its place:
 
     Opcode
     -----------------
-    0 0 0 0   D D D D   Destination register (A..N; attempting to load Z has no effect)
+    0 0 0 0   D D D D   Destination register (A..N; attempting to load Z will set flags but have no other effect)
     X X X X   X X X X   Byte following instruction is the value to load
