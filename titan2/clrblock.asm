@@ -24,11 +24,11 @@
 
 #ClrBlock
 	LDC B, 0x01
-	LDC H, 0x64    ; byte count
+	LDC D, 0x64    ; byte count
 #Loop
-	SUB H, B
+	SUB D, B
 	JPS #Done      ; note that this limits the routine to 128 block max
-	STM Z, #Data[H]
+	STM Z, #Data[D]
 	JMP #Loop
 #Done
 	JMP #Done
