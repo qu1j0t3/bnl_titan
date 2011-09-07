@@ -1,4 +1,7 @@
-# Proposed extended Titan #
+# Instruction set extensions: Titan-2 #
+
+Copyright (C) 2011 Toby Thain <toby@telegraphics.com.au>
+
 
 ## ALU extension ##
 
@@ -53,11 +56,13 @@ The four registers are mapped according to the 2 select bits as follows:
     10 = B
     11 = C
 
+
 ## Indexed addressing mode ##
 
-The memory load and store instructions (`LDM` and `STM`) are extended to store any of a set of eight
-GPRs (A..H) and given an optional index mode which uses the absolute address offset by index
-register H.
+The memory load and store instructions (`LDM` and `STM`) are extended to operate on
+any of eight GPRs (A..H) and given an optional index mode which uses the absolute address
+offset by index register H. (I have chosen H for index register for no good reason
+other than its low 3 bits are zero.)
 
     Opcode   I  Src
     -------  -  -----
@@ -80,8 +85,6 @@ The interpretation of SSS and DDD can be according to the low three bits of regi
     010 = B
     ...
     111 = G
-
-I have chosen H for index register for no good reason other than its low 3 bits are zero.
 
 
 ## Load constant ##
