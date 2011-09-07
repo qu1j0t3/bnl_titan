@@ -16,9 +16,9 @@
 ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 
-; Code      Constants
-; ----      ---------
-; 17 bytes  5 bytes    = 22 total
+; Code
+; ----
+; 17 bytes
 
 ; clear block of 100 bytes
 
