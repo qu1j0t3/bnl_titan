@@ -69,14 +69,14 @@ other than its low 3 bits are zero.)
     1 1 1 0  0  S S S   Store source register (A..H) in absolute location
              1  S S S   Store source register (A..H) in absolute location offset by GPR H
 
-    STM S, 0xHHHH
-    STM S, 0xHHHH[A]
+    STM S, 0xZZZZ
+    STM S, 0xZZZZ[H]
 
     1 1 1 1  0  D D D   Load destination register (A..H) from absolute location
              1  D D D   Load destination register (A..H) from absolute location offset by GPR H
 
-    LDM D, 0xHHHH
-    LDM D, 0xHHHH
+    LDM D, 0xZZZZ
+    LDM D, 0xZZZZ[H]
 
 The interpretation of SSS and DDD can be according to the low three bits of register number:
 
