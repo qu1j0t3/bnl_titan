@@ -9,7 +9,19 @@ For an example of these instructions in use, see [this directory](titan2/).
 ## ALU extension ##
 
 Most arithmetic and logical instructions allow specification of source and destination
-registers from a set of four.
+registers from a set of four. All ALU instructions update the sign, carry and zero flags.
+
+    Opcode   Sign   Carry   Zero
+    ------   ----   -----   ----
+    ADD      *      *       *      
+    SUB      *      *       *
+    AND      *      clear   *      AND R,R can be used to clear carry flag
+    OR       *      set     *      OR R,R can be used to set carry flag     [optional feature]
+    XOR      *      clear   *
+    NOT      *      clear   *
+    PSH, POP, JMP, JPI, JPZ, JPC, JPS, STM, LDM: flags unchanged
+    
+    * - Flags computed from result
 
 ### ADD, SUB, AND, OR, XOR ###
 
@@ -18,23 +30,19 @@ registers from a set of four.
     X X X X  S S  D D   XXXX is the opcode for ADD, SUB, AND, OR, XOR
                         SS and DD, decoded as 0..3, identify registers A..D
 
-The operation performed is
+    Operation:          Dst <-- Dst <op> Src
 
-    Dst <-- Dst <op> Src
-
-The assembler syntax is
-
-    ADD dst, src
+    Syntax:             ADD dst, src
 
 #### Notes ####
 
 1.  `XOR R,R` and `SUB R,R` set R to zero in one byte. The assembler can therefore optimise
-    `CLR A..D`.
+    `CLR A..D`. To set zero without touching flags, `MOV Z,R`.
 
 2.  `ADD R,R` is a left shift, rotating high bit into carry.
 
 3.  The null operations `AND R,R` and `OR R,R` can be used to set processor flags according to R
-    (zero, sign).
+    (zero, sign). Carry flag is cleared or set, respectively.
 
 ### NOT ###
 
@@ -43,6 +51,8 @@ The `NOT` operation is a special case, since only the destination register is sp
     Opcode   Src  Dst
     -------  ---  ---
     0 1 0 1  0 0  D D   Destination register DD (see above) is replaced by its binary complement.
+    
+    Syntax:             NOT A
 
 The following three opcodes are open for future extension. Possibilities are *increment, decrement, 
 shift right,* or *add carry bit.* Note that the latter would simplify long arithmetic
@@ -74,18 +84,18 @@ other than its low 3 bits are zero.)
     1 1 1 0  0  S S S   Store source register (A..H) in absolute location
              1  S S S   Store source register (A..H) in absolute location offset by GPR H
 
-    STM S, 0xZZZZ
-    STM S, 0xZZZZ[H]
+    Syntax:             STM S, 0xZZZZ
+                        STM S, 0xZZZZ[H]
 
     1 1 1 1  0  D D D   Load destination register (A..H) from absolute location
              1  D D D   Load destination register (A..H) from absolute location offset by GPR H
 
-    LDM D, 0xZZZZ
-    LDM D, 0xZZZZ[H]
+    Syntax:             LDM D, 0xZZZZ
+                        LDM D, 0xZZZZ[H]
 
 The interpretation of SSS and DDD can be according to the low three bits of register number:
 
-    000 = Z   (load has no effect other than setting flags; store will set location to zero)
+    000 = Z   (load has no effect; store will set location to zero)
     001 = A
     010 = B
     ...
@@ -101,5 +111,7 @@ A new instruction, `LDC`, takes its place:
 
     Opcode
     -----------------
-    0 0 0 0   D D D D   Destination register (A..N; attempting to load Z will have no effect)
+    0 0 0 0   D D D D   Destination register (A..N; specifying Z will have no effect)
     X X X X   X X X X   Byte following instruction is the value to load
+    
+    Syntax:             LDC A, 0x19
