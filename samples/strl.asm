@@ -23,6 +23,10 @@
 ;     return n;
 ; }  
 
+; Code      Constants
+; ----      ---------
+; 29 bytes  6 bytes    = 35 total
+
 
 #StrL
 	LDM #One   ; 00

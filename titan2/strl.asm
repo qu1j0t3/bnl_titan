@@ -23,6 +23,9 @@
 ;     return n;
 ; }  
 
+; Code      Constants
+; ----      ---------
+; 17 bytes  5 bytes    = 22 total
 
 #StrL
 	LDC B, 0x01

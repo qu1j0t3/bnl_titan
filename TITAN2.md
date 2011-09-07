@@ -24,7 +24,7 @@ The NOT opcode is a special case, since only the destination register is specifi
 
     Opcode   Src  Dst
     -------  ---  ---
-    0 1 0 1  0 0  D D   Destination register DD (see above) is replaced by its complement.
+    0 1 0 1  0 0  D D   Destination register DD (see above) is replaced by its binary complement.
 
 These variants are open for future extension. Possibilities are INC, DEC, TST, or (1 byte) CLR.
 
