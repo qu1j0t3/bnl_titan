@@ -27,13 +27,15 @@ The NOT opcode is a special case, since only the destination register is specifi
     0 1 0 1  0 0  D D   Destination register DD (see above) is replaced by its complement.
 
 These variants are open for future extension. Possibilities are INC and DEC.
+
     0 1 0 1  0 1  D D
     0 1 0 1  1 0  D D
     0 1 0 1  1 1  D D
 
-(* - If it is a simpler circuit, the four register set referenced by this extension
+(* --- If it is a simpler circuit, the four register set referenced by this extension
 can be D..G, as this can use the register select bits directly. This is preferable to
 H..K because it should overlap the eight register set addressable by LDM and STM.)
+
     00 = D
     01 = E
     10 = F
@@ -60,6 +62,7 @@ register A.
     LDM D, 0xHHHH
 
 The interpretation of SSS and DDD can be according to the low three bits of register number:
+
     000 = H
     001 = A
     010 = B
