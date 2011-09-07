@@ -52,7 +52,7 @@ The `NOT` operation is a special case, since only the destination register is sp
     -------  ---  ---
     0 1 0 1  0 0  D D   Destination register DD (see above) is replaced by its binary complement.
     
-    Syntax:             NOT A
+    Syntax:             NOT R
 
 The following three opcodes are open for future extension. Possibilities are *increment, decrement, 
 shift right,* or *add carry bit.* Note that the latter would simplify long arithmetic
@@ -76,22 +76,21 @@ to be hard-wired.*
 
 The memory load and store instructions (`LDM` and `STM`) are extended to operate on
 any of eight GPRs (A..H) and given an optional index mode which uses the absolute address
-offset by index register H. (I have chosen H for index register for no good reason
-other than its low 3 bits are zero.)
+offset by index register D [can be changed - but should be a register accessible by ALU instructions].
 
     Opcode   I  Src
     -------  -  -----
     1 1 1 0  0  S S S   Store source register (A..H) in absolute location
-             1  S S S   Store source register (A..H) in absolute location offset by GPR H
+             1  S S S   Store source register (A..H) in absolute location offset by GPR D
 
-    Syntax:             STM S, 0xZZZZ
-                        STM S, 0xZZZZ[H]
+    Syntax:             STM R, 0xZZZZ
+                        STM R, 0xZZZZ[D]
 
     1 1 1 1  0  D D D   Load destination register (A..H) from absolute location
-             1  D D D   Load destination register (A..H) from absolute location offset by GPR H
+             1  D D D   Load destination register (A..H) from absolute location offset by GPR D
 
-    Syntax:             LDM D, 0xZZZZ
-                        LDM D, 0xZZZZ[H]
+    Syntax:             LDM R, 0xZZZZ
+                        LDM R, 0xZZZZ[D]
 
 The interpretation of SSS and DDD can be according to the low three bits of register number:
 
@@ -104,8 +103,7 @@ The interpretation of SSS and DDD can be according to the low three bits of regi
 
 ## Load constant ##
 
-The `NOP` instruction is removed. (Instead, a pseudo instruction `NOP`
-can be assembled to `POP Z`.)
+The `NOP` instruction is removed. (Instead, a pseudo instruction `NOP` can be assembled to `POP Z`.)
 
 A new instruction, `LDC`, takes its place:
 
@@ -114,4 +112,4 @@ A new instruction, `LDC`, takes its place:
     0 0 0 0   D D D D   Destination register (A..N; specifying Z will have no effect)
     X X X X   X X X X   Byte following instruction is the value to load
     
-    Syntax:             LDC A, 0x19
+    Syntax:             LDC R, 0x19
