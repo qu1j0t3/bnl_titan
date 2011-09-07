@@ -3,7 +3,7 @@
 Copyright (C) 2011 Toby Thain <toby@telegraphics.com.au>
 
 
-For an example of these instructions in use, see [strl.asm](titan2/strl.asm).
+For an example of these instructions in use, see [this directory](titan2/).
 
 
 ## ALU extension ##
