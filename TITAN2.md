@@ -3,9 +3,12 @@
 Copyright (C) 2011 Toby Thain <toby@telegraphics.com.au>
 
 
+For an example of these instructions in use, see [strl.asm](titan2/strl.asm).
+
+
 ## ALU extension ##
 
-All arithmetic and logical instructions will allow specification of source and destination
+Most arithmetic and logical instructions allow specification of source and destination
 registers from a set of four.
 
 ### ADD, SUB, AND, OR, XOR ###
