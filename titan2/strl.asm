@@ -17,27 +17,28 @@
 
 ; Titan-2 assembly for strlen
 ; C:
-; unsigned strl(char *str){
-;     for(n = 0; *str++; ++n)
-;         ;
-;     return n;
-; }  
+;   unsigned strl(char *str){
+;       for(n = 0; *str++; ++n)
+;           ;
+;       return n;
+;   }  
 
 ; Code      Constants
 ; ----      ---------
 ; 17 bytes  5 bytes    = 22 total
 
 #StrL
-	LDC B, 0x01
-	CLR H
+	LDC B, 0x01    ; (2)
+	CLR D          ; (1) XOR D,D
 #Loop
-	LDM C, #Str[H]
-	JPZ #Done
-	ADD H, B       ; for simplicity, ignore carry. Str must not cross 00 page boundary
-	JMP #Loop
+	LDM C, #Str[D] ; (3)
+	TST C          ; (1) update flags = AND C,C
+	JPZ #Done      ; (3)
+	ADD D, B       ; (1) for simplicity, ignore carry. Str must not cross 00 page boundary
+	JMP #Loop      ; (3)
 #Done
-	; count is in H register
-	JMP #Done
+	; count is in C register
+	JMP #Done      ; (3)
 #Str
 	0x4f
 	0x48
