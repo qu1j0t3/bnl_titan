@@ -3,9 +3,12 @@
 Copyright (C) 2011 Toby Thain <toby@telegraphics.com.au>
 
 
+For an example of these instructions in use, see [strl.asm](titan2/strl.asm).
+
+
 ## ALU extension ##
 
-All arithmetic and logical instructions will allow specification of source and destination
+Most arithmetic and logical instructions allow specification of source and destination
 registers from a set of four.
 
 ### ADD, SUB, AND, OR, XOR ###
@@ -56,6 +59,8 @@ The four registers are mapped according to the 2 select bits as follows:
     10 = B
     11 = C
 
+*If it simplifies the circuitry, then use registers D..G instead. This allows the top two register select bits
+to be hard-wired.*
 
 ## Indexed addressing mode ##
 
@@ -80,7 +85,7 @@ other than its low 3 bits are zero.)
 
 The interpretation of SSS and DDD can be according to the low three bits of register number:
 
-    000 = H
+    000 = Z   (load has no effect other than setting flags; store will set location to zero)
     001 = A
     010 = B
     ...
@@ -96,5 +101,5 @@ A new instruction, `LDC`, takes its place:
 
     Opcode
     -----------------
-    0 0 0 0   D D D D   Destination register (A..N; attempting to load Z has no effect)
+    0 0 0 0   D D D D   Destination register (A..N; attempting to load Z will have no effect)
     X X X X   X X X X   Byte following instruction is the value to load
