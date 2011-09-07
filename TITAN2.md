@@ -14,11 +14,11 @@ registers from a set of four. All ALU instructions update the sign, carry and ze
     Opcode   Sign   Carry   Zero
     ------   ----   -----   ----
     ADD      *      *       *      
-    SUB      *      *       *
+    SUB      *      *       *      [For SUB, carry flag can be defined by same circuitry as ADD?]
     AND      *      clear   *      AND R,R can be used to clear carry flag
     OR       *      set     *      OR R,R can be used to set carry flag     [optional feature]
-    XOR      *      clear   *
-    NOT      *      clear   *
+    XOR      *      clear   *      [clearing flag is optional]
+    NOT      *      clear   *      [clearing flag is optional]
     PSH, POP, JMP, JPI, JPZ, JPC, JPS, STM, LDM: flags unchanged
     
     * - Flags computed from result
@@ -80,14 +80,14 @@ offset by index register D [can be changed - but should be a register accessible
 
     Opcode   I  Src
     -------  -  -----
-    1 1 1 0  0  S S S   Store source register (A..H) in absolute location
-             1  S S S   Store source register (A..H) in absolute location offset by GPR D
+    1 1 1 0  0  S S S   Store source register (Z, A..G) in absolute location
+             1  S S S   Store source register (Z, A..G) in absolute location offset by GPR D
 
     Syntax:             STM R, 0xZZZZ
                         STM R, 0xZZZZ[D]
 
-    1 1 1 1  0  D D D   Load destination register (A..H) from absolute location
-             1  D D D   Load destination register (A..H) from absolute location offset by GPR D
+    1 1 1 1  0  D D D   Load destination register (A..G) from absolute location
+             1  D D D   Load destination register (A..G) from absolute location offset by GPR D
 
     Syntax:             LDM R, 0xZZZZ
                         LDM R, 0xZZZZ[D]
@@ -107,8 +107,8 @@ The `NOP` instruction is removed. (Instead, a pseudo instruction `NOP` can be as
 
 A new instruction, `LDC`, takes its place:
 
-    Opcode
-    -----------------
+    Opcode    Dst
+    -------   -------
     0 0 0 0   D D D D   Destination register (A..N; specifying Z will have no effect)
     X X X X   X X X X   Byte following instruction is the value to load
     
