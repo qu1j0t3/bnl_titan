@@ -59,6 +59,8 @@ The four registers are mapped according to the 2 select bits as follows:
     10 = B
     11 = C
 
+*If it simplifies the circuitry, then use registers D..G instead. This allows the top two register select bits
+to be hard-wired.*
 
 ## Indexed addressing mode ##
 
@@ -83,12 +85,13 @@ other than its low 3 bits are zero.)
 
 The interpretation of SSS and DDD can be according to the low three bits of register number:
 
-    000 = H
+    000 = Z   (load has no effect other than setting flags; store will set location to zero)
     001 = A
     010 = B
     ...
     111 = G
 
+*Or, if it simplifies circuitry, the set 
 
 ## Load constant ##
 
@@ -99,5 +102,5 @@ A new instruction, `LDC`, takes its place:
 
     Opcode
     -----------------
-    0 0 0 0   D D D D   Destination register (A..N; attempting to load Z will set flags but have no other effect)
+    0 0 0 0   D D D D   Destination register (A..N; attempting to load Z will have no effect)
     X X X X   X X X X   Byte following instruction is the value to load
