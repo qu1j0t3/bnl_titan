@@ -14,8 +14,8 @@ registers from a set of four. All ALU instructions update the sign, carry and ze
     Opcode   Sign   Carry   Zero
     ------   ----   -----   ----
     ADD      *      *       *      
-    SUB      *      *       *      [For SUB, carry flag can be defined by same circuitry as ADD?]
-    AND      *      clear   *      AND R,R can be used to clear carry flag
+    SUB      *      *       *      [For SUB, carry flag can use same circuitry as ADD?]
+    AND      *      clear   *      AND R,R can be used to clear carry flag  [optional feature]
     OR       *      set     *      OR R,R can be used to set carry flag     [optional feature]
     XOR      *      clear   *      [clearing flag is optional]
     NOT      *      clear   *      [clearing flag is optional]
@@ -117,3 +117,21 @@ A new instruction, `LDC`, takes its place:
     X X X X   X X X X   Byte following instruction is the value to load
     
     Syntax:             LDC R, 0x19
+
+
+## Subroutines ##
+
+Since the lower four bits were unused by classic Titan, the `JMP` opcodes are broken down
+into new operations.
+
+    Opcode    Sub-op
+    -------   -------
+    1 0 0 1   0 0 0 0   JMP as defined by classic Titan (jump absolute)
+              0 0 0 1   JPI as defined by classic Titan (jump indirect)
+              1 0 0 0   JSR: push program counter and jump to absolute address
+              X X X X   Remaining opcodes are not defined
+
+The `JPI` instruction is removed and replaced by `RTS` (return from subroutine).
+
+    1 0 1 0   0 0 0 0   RTS: pop program counter value, effecting a subroutine return
+              X X X X   Remaining opcodes are not defined
