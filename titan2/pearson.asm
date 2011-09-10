@@ -17,6 +17,7 @@
 
 ; Titan-2 assembly for Pearson hashing
 ; see http://www.apps.ietf.org/rfc/rfc3074.html
+;     http://cs.mwsu.edu/~griffin/courses/2133/downloads/Old_Assignments/p677-pearson.pdf
 
 ;/* A "mixing table" of 256 distinct values, in pseudo-random order. */
 ;unsigned char loadb_mx_tbl[256] ={
@@ -40,6 +41,7 @@
 #Pearson
 	LDM D, #KeyLen  ; D shall index from last key element to first.
 	MOV D, A        ; A is the hash state. It is initialised to key length.
+	                ; (in the Pearson algorithm as first published, it is initialised to zero.)
 	LDC B, 0x01
 #Loop
 	SUB D, B
