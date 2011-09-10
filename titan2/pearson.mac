@@ -1,0 +1,75 @@
+;; This file is part of an assembler for bootnecklad's Titan
+;; Copyright (C) 2011 Toby Thain, toby@telegraphics.com.au
+;;
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by  
+;; the Free Software Foundation; either version 2 of the License, or
+;; (at your option) any later version.
+;;
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License  
+;; along with this program; if not, write to the Free Software
+;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+; PDP-11 assembly for Pearson hashing
+; see http://www.apps.ietf.org/rfc/rfc3074.html
+
+;/* A "mixing table" of 256 distinct values, in pseudo-random order. */
+;unsigned char loadb_mx_tbl[256] ={
+;    251, 175, 119, 215, 81, 14, 79, 191, 103, 49, 181, 143, 186, 157, 0,
+;    ...
+;    149, 80, 170, 68, 6, 169, 234, 151
+;};
+;unsigned char loadb_p_hash(
+;        const unsigned char *key,       /* The key to be hashed */
+;        const int len )                 /* Key length in bytes  */
+;{
+;    unsigned char hash  = len;
+;    int i;
+;    for (i=len ; i > 0 ; )
+;        hash = loadb_mx_tbl [ hash ^ key[ --i ] ];
+;    return( hash ); 
+;}
+
+; Code: 9 words = 18 bytes
+
+.title	pearson.hash
+
+; on entry:
+; r0 points to key
+; r1 has length of key
+pearson:
+	mov	r1,r4		; r4 will accumulate the hash state
+	add	r1,r0		; point one byte beyond end of key
+1$:
+	movb	-(r0),r2	; get next byte
+	movb	mixtab(r2),r3	; index into mix table
+	xor	r3,r4		; xor value into hash state
+	dec	r1
+	bne	1$
+2$:
+	rts	pc		; hash value is in r4
+	
+mixtab:	; table of 256 values, part of the hash state transition function
+	.radix	10
+	.byte 251, 175, 119, 215, 81, 14, 79, 191, 103, 49, 181, 143, 186, 157, 0, 232
+	.byte 31, 32, 55, 60, 152, 58, 17, 237, 174, 70, 160, 144, 220, 90, 57, 223
+	.byte 59, 3, 18, 140, 111, 166, 203, 196, 134, 243, 124, 95, 222, 179, 197, 65
+	.byte 180, 48, 36, 15, 107, 46, 233, 130, 165, 30, 123, 161, 209, 23, 97, 16
+	.byte 40, 91, 219, 61, 100, 10, 210, 109, 250, 127, 22, 138, 29, 108, 244, 67
+	.byte 207, 9, 178, 204, 74, 98, 126, 249, 167, 116, 34, 77, 193, 200, 121, 5
+	.byte 20, 113, 71, 35, 128, 13, 182, 94, 25, 226, 227, 199, 75, 27, 41, 245
+	.byte 230, 224, 43, 225, 177, 26, 155, 150, 212, 142, 218, 115, 241, 73, 88, 105
+	.byte 39, 114, 62, 255, 192, 201, 145, 214, 168, 158, 221, 148, 154, 122, 12, 84
+	.byte 82, 163, 44, 139, 228, 236, 205, 242, 217, 11, 187, 146, 159, 64, 86, 239
+	.byte 195, 42, 106, 198, 118, 112, 184, 172, 87, 2, 173, 117, 176, 229, 247, 253
+	.byte 137, 185, 99, 164, 102, 147, 45, 66, 231, 52, 141, 211, 194, 206, 246, 238
+	.byte 56, 110, 78, 248, 63, 240, 189, 93, 92, 51, 53, 183, 19, 171, 72, 50
+	.byte 33, 104, 101, 69, 8, 252, 83, 120, 76, 135, 85, 54, 202, 125, 188, 213
+	.byte 96, 235, 136, 208, 162, 129, 190, 132, 156, 38, 47, 1, 7, 254, 24, 4
+	.byte 216, 131, 89, 21, 28, 133, 37, 153, 149, 80, 170, 68, 6, 169, 234, 151
+; END

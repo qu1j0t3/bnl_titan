@@ -18,9 +18,11 @@
 CFLAGS = -O2 -g
 LDFLAGS = -g
 
-all : titan.grm.scm
+all : titan.grm.scm titan2/pearson.obj
 
-clean : ; rm -f titan.grm.scm titan.grm.out
+clean : ; rm -f titan.grm.scm titan.grm.out titan2/pearson.obj
 
 %.grm.scm : %.grm ; csi -s $<
+
+%.obj : %.mac ; macro11 -o $@ $<
 
