@@ -29,7 +29,7 @@
 	; five shifts:
 	ADD A,A		; (1) do hi byte first because we don't care about its carry
 	ADD B,B
-	ADC A		; in case high bit was shifted out of A
+	ADC A		; in case high bit was shifted out of B
 	ADD A,A		; (2)
 	ADD B,B
 	ADC A
