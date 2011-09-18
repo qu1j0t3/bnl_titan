@@ -19,8 +19,8 @@
 ; see e.g. http://devnotes.wikispaces.com/DJB+Hash+Function
 
 #Djb
-	LDM A, #InitH
-	LDM B, #InitL
+	LDC A, 0x15	; 5381 with hi byte in A
+	LDC B, 0x05	; and lo in B
 	CLR D
 #Loop
 	PSH D
@@ -62,11 +62,6 @@
 	JMP #Loop
 #Done
 	JMP #Done
-
-#InitH
-	0x15		; 5381 bigendian
-#InitL
-	0x05
 
 #KeyLen
 	0x05
