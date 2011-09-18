@@ -54,11 +54,11 @@
 	ADD B,C
 	ADC A
 	; update index reg and check if all key bytes have been used
-	LDC C, #KeyLen
-	SUB C, D
-	JPZ #Done
 	LDC C, 0x01
 	ADD D,C		; update index reg
+	LDM C, #KeyLen
+	SUB C, D
+	JPZ #Done
 	JMP #Loop
 #Done
 	JMP #Done
